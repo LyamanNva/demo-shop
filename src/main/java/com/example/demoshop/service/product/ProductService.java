@@ -1,9 +1,13 @@
 package com.example.demoshop.service.product;
 
+import com.example.demoshop.dto.ImageDto;
+import com.example.demoshop.dto.ProductDto;
 import com.example.demoshop.exceptions.ProductNotFoundException;
 import com.example.demoshop.model.Category;
+import com.example.demoshop.model.Image;
 import com.example.demoshop.model.Product;
 import com.example.demoshop.repository.CategoryRepository;
+import com.example.demoshop.repository.ImageRepository;
 import com.example.demoshop.repository.ProductRepository;
 import com.example.demoshop.request.AddProductRequest;
 import com.example.demoshop.request.ProductUpdateRequest;
@@ -23,6 +27,7 @@ public class ProductService implements IProductService{
     private final CategoryRepository categoryRepository;
 
     private final ModelMapper modelMapper;
+    private final ImageRepository imageRepository;
 
     @Override
     public Product addProduct(AddProductRequest request) {
@@ -110,5 +115,21 @@ public class ProductService implements IProductService{
     @Override
     public Long countProductsByBrandAndName(String brand, String name) {
         return productRepository.countByBrandAndName(brand,name);
+    }
+
+    @Override
+    public List<ProductDto> getConvertedProducts(List<Product> products){
+        return products.stream().map(this::convertToDto).toList();
+    }
+
+    @Override
+    public ProductDto convertToDto(Product product){
+        ProductDto productDto=modelMapper.map(product,ProductDto.class);
+        List<Image> images=imageRepository.findByProductId(product.getId());
+        List<ImageDto> imageDtos=images.stream()
+                .map(image->modelMapper.map(image,ImageDto.class))
+                .toList();
+        productDto.setImages(imageDtos);
+        return productDto;
     }
 }

@@ -1,5 +1,6 @@
 package com.example.demoshop.service.product;
 
+import com.example.demoshop.dto.ProductDto;
 import com.example.demoshop.model.Product;
 import com.example.demoshop.request.AddProductRequest;
 import com.example.demoshop.request.ProductUpdateRequest;
@@ -20,4 +21,7 @@ public interface IProductService {
     Long countProductsByBrandAndName(String brand,String name);
 
 
+    List<ProductDto> getConvertedProducts(List<Product> products);
+
+    ProductDto convertToDto(Product product);
 }
